@@ -2,7 +2,6 @@
 
 import React from "react";
 import useCourseLevel from "./useCourseLevel";
-import CourseModules from "../coursemodules/CourseModules";
 
 const t = {
   caption:

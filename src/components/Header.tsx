@@ -18,69 +18,69 @@ const CloseIcon = ({ className = "" }) => (
   </svg>
 );
 
-const MobileNav = React.memo(function MobileNav({
-  onClose,
-  onCtaClick,
-  ctaBg,
-}: {
-  onClose: () => void;
-  onCtaClick?: () => void;
-  ctaBg: string;
-}) {
-  return (
-    <div id="mobile-overlay" role="dialog" aria-modal="true" className="fixed inset-0 z-[100]">
-      <button aria-label="Close menu" className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative mx-auto flex h-full w-full flex-col bg-white shadow-xl">
-        <div className="flex items-center justify-between px-4 py-4">
-          <img src="https://media.onlinegermanskool.com/logo.svg" alt="Logo" className="h-7 w-auto" />
-          <button aria-label="Close menu" onClick={onClose} className="rounded-md p-2">
-            <CloseIcon />
-          </button>
-        </div>
+// const MobileNav = React.memo(function MobileNav({
+//   onClose,
+//   onCtaClick,
+//   ctaBg,
+// }: {
+//   onClose: () => void;
+//   onCtaClick?: () => void;
+//   ctaBg: string;
+// }) {
+//   return (
+//     <div id="mobile-overlay" role="dialog" aria-modal="true" className="fixed inset-0 z-[100]">
+//       <button aria-label="Close menu" className="absolute inset-0 bg-black/40" onClick={onClose} />
+//       <div className="relative mx-auto flex h-full w-full flex-col bg-white shadow-xl">
+//         <div className="flex items-center justify-between px-4 py-4">
+//           <img src="https://media.onlinegermanskool.com/logo.svg" alt="Logo" className="h-7 w-auto" />
+//           <button aria-label="Close menu" onClick={onClose} className="rounded-md p-2">
+//             <CloseIcon />
+//           </button>
+//         </div>
 
-        <div className="mx-4 overflow-hidden rounded-xl bg-white px-8">
-          {[
-            { label: "Courses", href: "#courses" },
-            { label: "Benefits", href: "#benefits" },
-            { label: "Testimonials", href: "#testimonials" },
-          ].map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              onClick={onClose}
-              className="flex items-center justify-between py-4 border-b-[1.5px] border-[#D1D0D6]"
-            >
-              <span className="text-[14px] font-medium text-[#242325]">{item.label}</span>
-              <svg width="18" height="18" viewBox="0 0 24 24">
-                <path d="M9 6l6 6-6 6" stroke="#D1D0D6" strokeWidth="2" strokeLinecap="round" fill="none" />
-              </svg>
-            </a>
-          ))}
-        </div>
+//         <div className="mx-4 overflow-hidden rounded-xl bg-white px-8">
+//           {[
+//             { label: "Courses", href: "#courses" },
+//             { label: "Benefits", href: "#benefits" },
+//             { label: "Testimonials", href: "#testimonials" },
+//           ].map((item) => (
+//             <a
+//               key={item.label}
+//               href={item.href}
+//               onClick={onClose}
+//               className="flex items-center justify-between py-4 border-b-[1.5px] border-[#D1D0D6]"
+//             >
+//               <span className="text-[14px] font-medium text-[#242325]">{item.label}</span>
+//               <svg width="18" height="18" viewBox="0 0 24 24">
+//                 <path d="M9 6l6 6-6 6" stroke="#D1D0D6" strokeWidth="2" strokeLinecap="round" fill="none" />
+//               </svg>
+//             </a>
+//           ))}
+//         </div>
 
-        <div className="mt-auto px-4 pb-6">
-          <button
-            onClick={() => {
-              onClose();
-              onCtaClick?.();
-            }}
-            className="mb-3 inline-flex h-12 w-full items-center justify-center rounded-xl font-semibold text-white"
-            style={{ backgroundColor: ctaBg }}
-          >
-            Book Free Trial Class
-          </button>
-          <a
-            href="#courses"
-            onClick={onClose}
-            className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-[#D1D0D6] bg-white text-sm font-semibold text-[#374151]"
-          >
-            Explore Courses
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-});
+//         <div className="mt-auto px-4 pb-6">
+//           <button
+//             onClick={() => {
+//               onClose();
+//               onCtaClick?.();
+//             }}
+//             className="mb-3 inline-flex h-12 w-full items-center justify-center rounded-xl font-semibold text-white"
+//             style={{ backgroundColor: ctaBg }}
+//           >
+//             Book Free Trial Class
+//           </button>
+//           <a
+//             href="#courses"
+//             onClick={onClose}
+//             className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-[#D1D0D6] bg-white text-sm font-semibold text-[#374151]"
+//           >
+//             Explore Courses
+//           </a>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// });
 
 export default function Header({
   onCtaClick,

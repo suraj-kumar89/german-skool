@@ -30,7 +30,7 @@ function Mesh() {
 }
 
 export default function FreeClass() {
-  const { UI, content, onCta } = useFreeClass();
+  const { UI, content } = useFreeClass();
 
   return (
     <section className="w-full">

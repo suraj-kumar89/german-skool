@@ -100,7 +100,6 @@ const Select: React.FC<SelectProps> = ({ error, placeholder, options, value, ...
 
 const GermanForm: React.FC = () => {
   const {
-    COLORS,
     content,
     form,
     setField,

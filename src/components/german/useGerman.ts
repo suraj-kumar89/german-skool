@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from 'react-router-dom'; 
-import { getCountries, getCountryCallingCode } from 'react-phone-number-input/input';
-import en from 'react-phone-number-input/locale/en.json';
+
 /** ---- Brand Colors (synced with header + salebanner) ---- */
 export const COLORS = {
   primary: "#826BFB",     // banner bg / brand
@@ -77,13 +76,13 @@ export function useGerman() {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const navigate = useNavigate();
 
-  const countryCodeOptions = useMemo(() => {
-    return getCountries().map(countryCode => {
-      const callingCode = getCountryCallingCode(countryCode);
-      const countryName = en[countryCode]; // Get the country name from the locale
-      return `${countryName} (+${callingCode})`;
-    }).sort(); // Sorting alphabetically
-  }, []);
+  // const countryCodeOptions = useMemo(() => {
+  //   return getCountries().map(countryCode => {
+  //     const callingCode = getCountryCallingCode(countryCode);
+  //     const countryName = en[countryCode]; // Get the country name from the locale
+  //     return `${countryName} (+${callingCode})`;
+  //   }).sort(); // Sorting alphabetically
+  // }, []);
   const setField = useCallback(
     // Added 'string | boolean' to support checkbox and select
     (k: keyof LeadForm, v: string | boolean) => {

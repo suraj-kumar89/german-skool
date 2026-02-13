@@ -25,49 +25,49 @@ const Bullet: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 /** Single Input component with date placeholder overlay */
-const Input: React.FC<
-  React.InputHTMLAttributes<HTMLInputElement> & { error?: string }
-> = ({ error, type, value, placeholder, ...props }) => {
-  const isDate = type === "date";
-  const showOverlay = isDate && !value; // empty date => show our label & hide native mask
-  return (
-    <div className="relative space-y-1">
-      <input
-        {...props}
-        type={type}
-        value={value}
-        placeholder={isDate ? undefined : placeholder}
-        className={`w-full rounded-lg border bg-white px-3 py-3 text-sm outline-none transition placeholder:opacity-60 ${
-          error ? "border-red-400" : "border-gray-200"
-        } focus:border-gray-400 ${showOverlay ? "date-mask-hidden" : ""}`}
-      />
-      {showOverlay && placeholder ? (
-        <span className="pointer-events-none absolute left-3 top-3 text-sm text-gray-400">
-          {placeholder}
-        </span>
-      ) : null}
-      {error ? <p className="text-xs text-red-500">{error}</p> : null}
-    </div>
-  );
-};
+// const Input: React.FC<
+//   React.InputHTMLAttributes<HTMLInputElement> & { error?: string }
+// > = ({ error, type, value, placeholder, ...props }) => {
+//   const isDate = type === "date";
+//   const showOverlay = isDate && !value; // empty date => show our label & hide native mask
+//   return (
+//     <div className="relative space-y-1">
+//       <input
+//         {...props}
+//         type={type}
+//         value={value}
+//         placeholder={isDate ? undefined : placeholder}
+//         className={`w-full rounded-lg border bg-white px-3 py-3 text-sm outline-none transition placeholder:opacity-60 ${
+//           error ? "border-red-400" : "border-gray-200"
+//         } focus:border-gray-400 ${showOverlay ? "date-mask-hidden" : ""}`}
+//       />
+//       {showOverlay && placeholder ? (
+//         <span className="pointer-events-none absolute left-3 top-3 text-sm text-gray-400">
+//           {placeholder}
+//         </span>
+//       ) : null}
+//       {error ? <p className="text-xs text-red-500">{error}</p> : null}
+//     </div>
+//   );
+// };
 
 
-const Textarea: React.FC<
-  React.TextareaHTMLAttributes<HTMLTextAreaElement> & { error?: string }
-> = ({ error, ...props }) => (
-  <div className="space-y-1">
-    <textarea
-      {...props}
-      className={`w-full min-h-[84px] rounded-lg border bg-white px-3 py-3 text-sm outline-none transition placeholder:opacity-60 ${
-        error ? "border-red-400" : "border-gray-200"
-      } focus:border-gray-400`}
-    />
-    {error ? <p className="text-xs text-red-500">{error}</p> : null}
-  </div>
-);
+// const Textarea: React.FC<
+//   React.TextareaHTMLAttributes<HTMLTextAreaElement> & { error?: string }
+// > = ({ error, ...props }) => (
+//   <div className="space-y-1">
+//     <textarea
+//       {...props}
+//       className={`w-full min-h-[84px] rounded-lg border bg-white px-3 py-3 text-sm outline-none transition placeholder:opacity-60 ${
+//         error ? "border-red-400" : "border-gray-200"
+//       } focus:border-gray-400`}
+//     />
+//     {error ? <p className="text-xs text-red-500">{error}</p> : null}
+//   </div>
+// );
 
 const German: React.FC = () => {
-  const { COLORS, content, form, setField, errors, touched, setTouched, handleSubmit, loading } = useGerman();
+  const { COLORS, content} = useGerman();
 
   return (
     <section className="w-full md:pt-20" style={{ background: "linear-gradient(180deg,#EEF2FF,#F7F9FF)" }}>

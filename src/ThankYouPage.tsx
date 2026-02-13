@@ -1,8 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Header from "../src/components/Header";  // Assuming Header component is in the same directory
-import Footer from "../src/components/Footer";  // Assuming Footer component is in the same directory
-
 const ThankYouPage = () => {
   return (
     <div>
