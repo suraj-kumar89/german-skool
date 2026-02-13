@@ -86,7 +86,7 @@ export const useJourney = () => {
         avatars: inner,
       },
     ],
-    []
+    [outer, mid, inner]
   );
 
   // Utility to compute evenly spaced angles for a ring.
