@@ -1,31 +1,25 @@
-import { useCallback, useMemo, useState } from "react";
-import { useNavigate } from 'react-router-dom'; 
+import { useCallback, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
-/** ---- Brand Colors (synced with header + salebanner) ---- */
+/* ---------- content ---------- */
 export const COLORS = {
-  primary: "#826BFB",     // banner bg / brand
-  ctaBg: "#A894FF",       // header button bg
-  ctaText: "#E4F1FE",     // header button text
-  body: "#6B6A70",        // nav/body text
-  bannerText: "#FFFFFF",  // banner text
+  primary: "#826BFB",
+  ctaBg: "#A894FF",
+  ctaText: "#E4F1FE",
+  body: "#6B6A70",
+  bannerText: "#FFFFFF",
 };
 
-// Dropdown Options
-export const tefGoalOptions = ["Germany PR", "Job Seeker Visa", "Study in Germany", "Work Abroad / Career Growth"];
-export const germanLevelOptions = ["Beginner (A1)", "Beginner (A2)", "Intermediate (B1)", "Upper Intermediate (B2)", "Advanced (C1/C2)", "Not Sure"];
-
-/** ---- Static content (copy lives with the hook for easy edits) ---- */
 export const content = {
   badge: "A1 Beginner Course Starts Soon",
   title: "German Language Courses",
-  subtitle: "From Beginner to Advanced(A1–C2)",
+  subtitle: "From Beginner to Advanced (A1–C2)",
   description:
-    "Live online classes with certified German tutors. Flexible schedules, personalized learning, and a free trial class to help you start with confidence.",
+    "Live online classes with certified German tutors. Flexible schedules, personalized learning, and a trial class to help you start with confidence.",
   ctas: {
-   
-    book: "Book Free Trial Class",
-     explore: "Explore Courses",
-    submit: "Get Started for Free →",
+    book: "Book Trial Class",
+    explore: "Explore Courses",
+    submit: "Get Started for Trail →",
   },
   bulletsLeft: [
     "Super Intensive Fast Track Course",
@@ -38,23 +32,50 @@ export const content = {
   ],
   socialProof: "Trusted by over 1000+ learners worldwide.",
   formTitle: "Get Personalized Guidance",
-  formConsent: "I agree to be contacted regarding courses and offers.",
 };
 
+export const tefGoalOptions = [
+  "Germany PR",
+  "Job Seeker Visa",
+  "Study in Germany",
+  "Work Abroad",
+];
 
-/** ---- Lead form state & validation ---- */
+export const germanLevelOptions = [
+  "Beginner (A1)",
+  "Beginner (A2)",
+  "Intermediate (B1)",
+  "Upper Intermediate (B2)",
+  "Advanced (C1/C2)",
+  "Not Sure",
+];
+
+/* ---------- form type ---------- */
+
 export type LeadForm = {
   fullName: string;
   countryCode: string;
-  phone: string; 
+  phone: string;
   email: string;
-  goal: string; 
-  germanLevel: string; 
-  startDate: string; 
-  learningNeeds: string; 
-  consent: boolean; 
-  expertGuidance: boolean; 
+  goal: string;
+  germanLevel: string;
+  startDate: string;
+  learningNeeds: string;
+  consent: boolean;
+  expertGuidance: boolean;
+
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_term?: string;
+  utm_content?: string;
+
+  referrer?: string;
+  landing_page?: string;
+  user_agent?: string;
 };
+
+/* ---------- initial ---------- */
 
 const initial: LeadForm = {
   fullName: "",
@@ -67,128 +88,77 @@ const initial: LeadForm = {
   learningNeeds: "",
   consent: false,
   expertGuidance: false,
+
+  utm_source: "",
+  utm_medium: "",
+  utm_campaign: "",
+  utm_term: "",
+  utm_content: "",
+
+  referrer: "",
+  landing_page: "",
+  user_agent: "",
 };
 
-
-export function useGerman() {
+export default function useGerman() {
   const [form, setForm] = useState<LeadForm>(initial);
   const [loading, setLoading] = useState(false);
-  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const navigate = useNavigate();
 
-  // const countryCodeOptions = useMemo(() => {
-  //   return getCountries().map(countryCode => {
-  //     const callingCode = getCountryCallingCode(countryCode);
-  //     const countryName = en[countryCode]; // Get the country name from the locale
-  //     return `${countryName} (+${callingCode})`;
-  //   }).sort(); // Sorting alphabetically
-  // }, []);
-  const setField = useCallback(
-    // Added 'string | boolean' to support checkbox and select
-    (k: keyof LeadForm, v: string | boolean) => {
-      setForm((prev) => ({ ...prev, [k]: v }));
-    },
-    []
-  );
+  /* ---------- capture UTM ---------- */
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
 
-const errors = useMemo(() => {
-  const e: Partial<Record<keyof LeadForm, string>> = {};
-  if (!form.fullName) e.fullName = "Required";
-  if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = "Enter a valid email";
-  if (!form.countryCode) e.countryCode = "Select your country code";
-  if (!/^\+?[0-9]{7,15}$/.test(form.phone)) e.phone = "Enter a valid phone";
-  if (!form.goal) e.goal = "Select your goal";
-  if (!form.germanLevel) e.germanLevel = "Select your level";
-  if (!form.startDate) e.startDate = "Select a date";
-    if (!form.learningNeeds || form.learningNeeds.trim().length < 30) {
-    e.learningNeeds = "Please enter at least 30 characters";
-  }
-  
-  // Ensure both consent checkboxes are selected
-  if (!form.consent) e.consent = "You must agree to be contacted regarding courses and offers";
-  if (!form.expertGuidance) e.expertGuidance = "You must agree to expert guidance for the German exam";
+    setForm((prev) => ({
+      ...prev,
+      utm_source: params.get("utm_source") || "",
+      utm_medium: params.get("utm_medium") || "",
+      utm_campaign: params.get("utm_campaign") || "",
+      utm_term: params.get("utm_term") || "",
+      utm_content: params.get("utm_content") || "",
+      referrer: document.referrer,
+      landing_page: window.location.href,
+      user_agent: navigator.userAgent,
+    }));
+  }, []);
 
-  return e;
-}, [form]);
+  /* ---------- set field ---------- */
 
+  const setField = useCallback((k: keyof LeadForm, v: any) => {
+    setForm((prev) => ({ ...prev, [k]: v }));
+  }, []);
 
-  const hasError = useMemo(() => Object.keys(errors).length > 0, [errors]);
-const handleSubmit = useCallback(async () => {
-  setTouched({
-    fullName: true,
-    countryCode: true,
-    phone: true,
-    email: true,
-    goal: true,
-    germanLevel: true,
-    startDate: true,
-    learningNeeds: true,
-    consent: true,
-    expertGuidance: true,
-  });
+  /* ---------- submit (No Database) ---------- */
 
-  if (hasError) return;
+  const handleSubmit = useCallback(async () => {
+    try {
+      setLoading(true);
 
-  try {
-    setLoading(true);
+      // 🔹 Instead of database, just log data
+      console.log("Form Submitted:", form);
 
-    const payload = {
-      fullName: form.fullName,
-      countryCode: form.countryCode,
-      phone: form.phone,
-      email: form.email,
-      goal: form.goal,
-      germanLevel: form.germanLevel,
-      startDate: form.startDate,
-      learningNeeds: form.learningNeeds,
-      consent: form.consent ? "true" : "false",
-      expertGuidance: form.expertGuidance ? "true" : "false",
-    };
+      // Optional: Save to localStorage
+      localStorage.setItem("german_lead", JSON.stringify(form));
 
-    // 👇 Decide base URL depending on where the app runs
-    const isLocal = window.location.hostname === "localhost";
-    const apiUrl = isLocal
-      ? "http://localhost:5000/api/submit"
-      : "/api/submit"; // this becomes https://onlinegermanskool.com/api/submit in prod
-
-    const emailResponse = await fetch(apiUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const emailJson = await emailResponse.json();
-
-    if (emailJson?.message === "Emails sent and data stored successfully") {
-      setTouched({});
+      // Redirect
       navigate("/thank_you", { replace: true });
-    } else {
-      alert(emailJson?.error || "Something went wrong. Please try again.");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to submit form");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Error submitting form:", err);
-    alert("Network error. Please try again.");
-  } finally {
-    setLoading(false);
-  }
-}, [form, hasError, navigate]);
-
+  }, [form, navigate]);
 
   return {
     COLORS,
     content,
     form,
     setField,
-    errors,
-    touched,
-    setTouched,
     handleSubmit,
     loading,
-    // Exporting the options
-    tefGoalOptions, 
+    tefGoalOptions,
     germanLevelOptions,
   };
 }
-
-export default useGerman;

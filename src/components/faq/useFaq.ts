@@ -24,8 +24,8 @@ const items: FaqItem[] = [
   },
   {
     id: "q5",
-    q: "Do you offer free demo classes?",
-    a: "Yes, you can attend a free trial class before enrolling in a full programme.",
+    q: "Do you offer demo classes?",
+    a: "Yes, you can attend a trial class before enrolling in a full programme.",
   },
   {
     id: "q6",

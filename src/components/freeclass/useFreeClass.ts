@@ -14,12 +14,12 @@ export default function useFreeClass() {
   };
 
   const content = {
-    badge: 'Free Class Offer',
+    badge: 'Trail Class Offer',
     titleLine1: 'Experience Before',
     titleLine2: 'You Commit',
     subtitle:
-      'Book a free trial class and see how easy and fun learning German can be.',
-    cta: 'Book Free Trial Class',
+      'Book a trial class and see how easy and fun learning German can be.',
+    cta: 'Book Trial Class',
     image:
       'https://media.onlinegermanskool.com/assets/freeoffer.svg', // replace with your asset
     imageAlt: 'Learner taking an online German trial class',

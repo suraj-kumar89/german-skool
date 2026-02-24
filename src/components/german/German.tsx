@@ -23,51 +23,8 @@ const Bullet: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <span className="md:text-[15px] text-[13px] leading-6">{children}</span>
   </li>
 );
-
-/** Single Input component with date placeholder overlay */
-// const Input: React.FC<
-//   React.InputHTMLAttributes<HTMLInputElement> & { error?: string }
-// > = ({ error, type, value, placeholder, ...props }) => {
-//   const isDate = type === "date";
-//   const showOverlay = isDate && !value; // empty date => show our label & hide native mask
-//   return (
-//     <div className="relative space-y-1">
-//       <input
-//         {...props}
-//         type={type}
-//         value={value}
-//         placeholder={isDate ? undefined : placeholder}
-//         className={`w-full rounded-lg border bg-white px-3 py-3 text-sm outline-none transition placeholder:opacity-60 ${
-//           error ? "border-red-400" : "border-gray-200"
-//         } focus:border-gray-400 ${showOverlay ? "date-mask-hidden" : ""}`}
-//       />
-//       {showOverlay && placeholder ? (
-//         <span className="pointer-events-none absolute left-3 top-3 text-sm text-gray-400">
-//           {placeholder}
-//         </span>
-//       ) : null}
-//       {error ? <p className="text-xs text-red-500">{error}</p> : null}
-//     </div>
-//   );
-// };
-
-
-// const Textarea: React.FC<
-//   React.TextareaHTMLAttributes<HTMLTextAreaElement> & { error?: string }
-// > = ({ error, ...props }) => (
-//   <div className="space-y-1">
-//     <textarea
-//       {...props}
-//       className={`w-full min-h-[84px] rounded-lg border bg-white px-3 py-3 text-sm outline-none transition placeholder:opacity-60 ${
-//         error ? "border-red-400" : "border-gray-200"
-//       } focus:border-gray-400`}
-//     />
-//     {error ? <p className="text-xs text-red-500">{error}</p> : null}
-//   </div>
-// );
-
 const German: React.FC = () => {
-  const { COLORS, content} = useGerman();
+  const { COLORS, content } = useGerman();
 
   return (
     <section className="w-full md:pt-20" style={{ background: "linear-gradient(180deg,#EEF2FF,#F7F9FF)" }}>
@@ -104,23 +61,23 @@ const German: React.FC = () => {
 
             <div className="mt-5 flex w-full flex-col gap-3 sm:flex-row sm:justify-center md:justify-start">
               <a
-  href="#courses"
-  className="inline-flex h-12 w-full items-center justify-center rounded-xl border text-sm font-semibold sm:w-auto sm:px-6"
-  style={{ borderColor: "#D9DEE7", color: "#414f66ff"}}
->
-  {content.ctas.explore}
-</a>
+                href="#courses"
+                className="inline-flex h-12 w-full items-center justify-center rounded-xl border text-sm font-semibold sm:w-auto sm:px-6"
+                style={{ borderColor: "#D9DEE7", color: "#414f66ff" }}
+              >
+                {content.ctas.explore}
+              </a>
 
 
               <a
                 href="/contact_us"
                 className="inline-flex h-12 w-full items-center justify-center rounded-xl text-sm font-semibold sm:w-auto sm:px-6"
-                style={{ backgroundColor: COLORS.ctaBg, color: COLORS.ctaText, fontFamily: "Raveo Display, sans-serif", fontWeight: 600}}
+                style={{ backgroundColor: COLORS.ctaBg, color: COLORS.ctaText, fontFamily: "Raveo Display, sans-serif", fontWeight: 600 }}
               >
                 {content.ctas.book} <span className="ml-2">→</span>
               </a>
 
-              
+
             </div>
 
             <div className="mt-6 grid gap-3 md:grid-cols-2">

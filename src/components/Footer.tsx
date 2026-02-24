@@ -45,7 +45,7 @@ export default function Footer({
             className="inline-flex md:w-fit w-full justify-center items-center gap-2 rounded-lg px-5 py-3 text-[#ffffff] text-[15px] font-semibold"
             style={{ backgroundColor: brandSoft, fontFamily: "Raveo Display, sans-serif" }}
           >
-            Book Free Trial Class Today
+            Book Trial Class Today
             <span aria-hidden>↗</span>
           </a>
         </div>

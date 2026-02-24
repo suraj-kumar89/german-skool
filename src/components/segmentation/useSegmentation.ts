@@ -37,7 +37,7 @@ export default function useSegmentation() {
   ];
 
   const cta = {
-    label: 'Book Free Trial Class →',
+    label: 'Book Trial Class →',
     href: '/contact_us',
   };
 

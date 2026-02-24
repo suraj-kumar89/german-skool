@@ -18,8 +18,8 @@ export const content = {
   //   "Whether you're a prospective student, parent, alumni, or community member, we value your feedback and are eager to assist you.",
   ctas: {
     explore: "Explore Courses",
-    book: "Book Free Trial Class",
-    submit: "Get Started for Free →",
+    book: "Book Trial Class",
+    submit: "Get Started for Trail→",
   },
   bulletsLeft: [
     "Super Intensive Fast Track Course",
