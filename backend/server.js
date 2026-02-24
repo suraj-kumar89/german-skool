@@ -1,258 +1,165 @@
-// import express from 'express';
-// import cors from 'cors';
-// import nodemailer from 'nodemailer';
-// import fetch from 'node-fetch';
-// import dotenv from 'dotenv';
+// server.js
+// Full backend from scratch: Express + HubSpot submit API (for your German lead form)
 
-// dotenv.config();
-
-// const app = express();
-// app.use(cors());
-// app.use(express.json({ limit: '1mb' }));
-
-// const {
-//   SMTP_HOST,
-//   SMTP_PORT,
-//   SMTP_USER,
-//   SMTP_PASS,
-//   MAIL_FROM,
-//   MAIL_TO,
-//   PORT = 5000,
-// } = process.env;
-
-// // Support both names (older code and your .env)
-// const GOOGLE_SHEETS_WEBAPP_URL = (process.env.GOOGLE_SHEETS_WEBAPP_URL || process.env.APPS_SCRIPT_URL || '').trim();
-
-// // Normalize SMTP port (trim possible spaces)
-// const smtpPortNum = SMTP_PORT ? Number(String(SMTP_PORT).trim()) : undefined;
-
-// /* small helper */
-// function escapeHtml(str = '') {
-//   return String(str)
-//     .replaceAll('&', '&amp;')
-//     .replaceAll('<', '&lt;')
-//     .replaceAll('>', '&gt;')
-//     .replaceAll('"', '&quot;')
-//     .replaceAll("'", '&#39;');
-// }
-
-// const transporter = nodemailer.createTransport({
-//   host: SMTP_HOST || '',
-//   port: smtpPortNum || 587,
-//   secure: smtpPortNum === 465,
-//   auth: SMTP_USER && SMTP_PASS ? { user: SMTP_USER, pass: SMTP_PASS } : undefined,
-// });
-
-// transporter.verify()
-//   .then(() => console.log('SMTP ready'))
-//   .catch((err) => console.warn('SMTP warn:', err && err.message));
-
-// /* post to Google Sheets (Apps Script) with timeout */
-// async function postToGoogleSheets(payload, timeoutMs = 10000) {
-//   if (!GOOGLE_SHEETS_WEBAPP_URL) {
-//     throw new Error('GOOGLE_SHEETS_WEBAPP_URL not configured');
-//   }
-//   const controller = new AbortController();
-//   const id = setTimeout(() => controller.abort(), timeoutMs);
-
-//   try {
-//     const resp = await fetch(GOOGLE_SHEETS_WEBAPP_URL, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//         'Accept': 'application/json',
-//       },
-//       body: JSON.stringify(payload),
-//       signal: controller.signal,
-//     });
-//     clearTimeout(id);
-
-//     const text = await resp.text();
-//     let parsed;
-//     try { parsed = text ? JSON.parse(text) : null; } catch (e) { parsed = { raw: text }; }
-
-//     if (!resp.ok) {
-//       const err = new Error(`Sheets returned ${resp.status}`);
-//       err.status = resp.status;
-//       err.body = parsed;
-//       throw err;
-//     }
-//     return { status: resp.status, body: parsed };
-//   } catch (err) {
-//     if (err.name === 'AbortError') throw new Error(`Timed out after ${timeoutMs}ms`);
-//     throw err;
-//   }
-// }
-
-// /* endpoint */
-// app.post('/api/submit', async (req, res) => {
-//   try {
-//     const {
-//       fullName,
-//       email,
-//       phone,
-//       goal,
-//       germanLevel,
-//       startDate,
-//       learningNeeds,
-//       consent,
-//       countryCode,
-//       expertGuidance,
-
-//       // UTM fields coming from useTEF()
-//       utm_source,
-//       utm_medium,
-//       utm_campaign,
-//       utm_term,
-//       utm_content,
-//     } = req.body || {};
-
-//     if (!fullName || !email) {
-//       return res
-//         .status(400)
-//         .json({ error: "Missing required fields fullName or email" });
-//     }
-
-//     // Ensure we always send a timestamp (ISO string)
-//     const timestamp = new Date().toISOString();
-
-//     // ---- Payload that goes to Google Sheets ----
-// const googleSheetPayload = {
-//   fullName,
-//   countryCode,
-//   phone,
-//   email,
-//   goal,
-//   germanLevel,
-//   startDate,
-//   learningNeeds,
-//   consent,
-//   expertGuidance,
-//   timestamp,
-//   utm_source,
-//   utm_medium,
-//   utm_campaign,
-//   utm_term,
-//   utm_content,
-// };
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 
 
-//     // ---- Store in Google Sheet ----
-//     let gsResult;
-//     try {
-//       gsResult = await postToGoogleSheets(googleSheetPayload, 12000);
-//       console.log("Google Sheets result:", gsResult);
-//     } catch (err) {
-//       console.error(
-//         "Google Sheets error:",
-//         (err && err.message) || err
-//       );
-//       return res.status(502).json({
-//         error: "Failed to store in Google Sheets",
-//         details: (err && err.message) || String(err),
-//       });
-//     }
+dotenv.config();
 
-//     // ---- Emails ----
+const app = express();
 
-//     const userMailOptions = {
-//       from: MAIL_FROM,
-//       to: email,
-//       subject: "We received your request",
-//       html: `<h1>Thanks ${escapeHtml(fullName)}</h1>
-//              <p>We'll contact you shortly regarding ${escapeHtml(
-//                goal || ""
-//              )}.</p>
-//              <p>Submitted at: ${escapeHtml(timestamp)}</p>`,
-//     };
+/* -------------------- Config -------------------- */
+const PORT = process.env.PORT || 5000;
+const HUBSPOT_PORTAL_ID = process.env.HUBSPOT_PORTAL_ID;
+const HUBSPOT_FORM_ID = process.env.HUBSPOT_FORM_ID;
 
-//     const adminMailOptions = {
-//       from: MAIL_FROM,
-//       to: MAIL_TO,
-//       subject: `New Lead: ${fullName} - ${goal}`,
-//       html: `<h2>New Submission</h2>
-//              <p><strong>Name:</strong> ${escapeHtml(fullName)}</p>
-//              <p><strong>Email:</strong> ${escapeHtml(email)}</p>
-//              <p><strong>Phone:</strong> ${escapeHtml(phone || "")}</p>
-//              <p><strong>Country:</strong> ${escapeHtml(
-//                countryCode || ""
-//              )}</p>
-//              <p><strong>Goal:</strong> ${escapeHtml(goal || "")}</p>
-//              <p><strong>French Level:</strong> ${escapeHtml(
-//                germanLevel || ""
-//              )}</p>
-//              <p><strong>Start Date:</strong> ${escapeHtml(
-//                startDate || ""
-//              )}</p>
-//              <p><strong>Consent:</strong> ${escapeHtml(
-//                String(consent || "")
-//              )}</p>
-//              <p><strong>Expert Guidance:</strong> ${escapeHtml(
-//                String(expertGuidance || "")
-//              )}</p>
-//              <h3>UTM Info</h3>
-//              <p><strong>utm_source:</strong> ${escapeHtml(
-//                utm_source || ""
-//              )}</p>
-//              <p><strong>utm_medium:</strong> ${escapeHtml(
-//                utm_medium || ""
-//              )}</p>
-//              <p><strong>utm_campaign:</strong> ${escapeHtml(
-//                utm_campaign || ""
-//              )}</p>
-//              <p><strong>utm_term:</strong> ${escapeHtml(
-//                utm_term || ""
-//              )}</p>
-//              <p><strong>utm_content:</strong> ${escapeHtml(
-//                utm_content || ""
-//              )}</p>
-//              <p><strong>Submitted at:</strong> ${escapeHtml(
-//                timestamp
-//              )}</p>
-//              <pre>${JSON.stringify(gsResult).slice(0, 1000)}</pre>`,
-//     };
+// If you know your frontend URL(s), lock CORS to them (recommended).
+// Example: CORS_ORIGINS=https://yourdomain.com,https://www.yourdomain.com,http://localhost:5173
+const CORS_ORIGINS = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 
-//     // send user email
-//     try {
-//       await transporter.sendMail(userMailOptions);
-//       console.log("User mail sent");
-//     } catch (err) {
-//       console.warn("User mail failed:", (err && err.message) || err);
-//       // continue to admin mail
-//     }
+app.use(
+  cors({
+    origin: CORS_ORIGINS.length ? CORS_ORIGINS : true,
+    credentials: true,
+  })
+);
+app.use(express.json({ limit: "1mb" }));
 
-//     // send admin email
-//     try {
-//       await transporter.sendMail(adminMailOptions);
-//       console.log("Admin mail sent");
-//     } catch (err) {
-//       console.error("Admin mail failed:", (err && err.message) || err);
-//       return res
-//         .status(502)
-//         .json({ error: "Failed to send admin email", details: err && err.message });
-//     }
+/* -------------------- Startup check -------------------- */
+console.log("ENV check:", {
+  hubspot: Boolean(HUBSPOT_PORTAL_ID && HUBSPOT_FORM_ID),
+  cors_locked: Boolean(CORS_ORIGINS.length),
+  port: PORT,
+});
 
-//     return res.status(200).json({
-//       message: "Emails sent and data stored successfully",
-//       sheets: gsResult,
-//     });
-//   } catch (err) {
-//     console.error(
-//       "Unhandled /api/submit error:",
-//       (err && err.stack) || err
-//     );
-//     return res.status(500).json({
-//       error: "Internal server error",
-//       details: err && err.message,
-//     });
-//   }
-// });
+function getCallingCode(countryCode = "") {
+  const m = String(countryCode).match(/\+\d+/);
+  return m?.[0] || "";
+}
 
+// HubSpot date fields typically want milliseconds since epoch
+function safeDateMs(startDate) {
+  if (!startDate) return "";
+  const t = new Date(startDate).getTime();
+  return Number.isNaN(t) ? "" : t;
+}
 
-// /* health */
-// app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
+/**
+ * IMPORTANT:
+ * The "name" values below MUST match the internal property names configured in your HubSpot form.
+ * If your HubSpot form uses different internal names, update them in buildHubSpotPayload().
+ */
+function buildHubSpotPayload(body) {
+  const b = body || {};
+  const callingCode = getCallingCode(b.countryCode);
+  const phone = b.phone ? `${callingCode}${b.phone}` : "";
+  const startDateMs = safeDateMs(b.startDate);
 
-// app.listen(Number(PORT), () => {
-//   console.log(`Server listening on port ${PORT}`);
-//   console.log('Google Sheets URL configured?', !!GOOGLE_SHEETS_WEBAPP_URL);
-// });
+  return {
+    fields: [
+      { name: "email", value: b.email || "" },
+
+      // Send FULL NAME directly to firstname (as per HubSpot form)
+      { name: "firstname", value: b.fullName || "" },
+
+      { name: "phone", value: phone },
+
+      { name: "goal", value: b.goal || "" },
+      { name: "german_level", value: b.germanLevel || "" },
+      { name: "start_date", value: startDateMs || "" },
+      { name: "learning_needs", value: b.learningNeeds || "" },
+
+      { name: "consent", value: b.consent ? "true" : "false" },
+      { name: "expert_guidance", value: b.expertGuidance ? "true" : "false" },
+
+      { name: "utm_source", value: b.utm_source || "" },
+      { name: "utm_medium", value: b.utm_medium || "" },
+      { name: "utm_campaign", value: b.utm_campaign || "" },
+      { name: "utm_term", value: b.utm_term || "" },
+      { name: "utm_content", value: b.utm_content || "" },
+
+      { name: "referrer", value: b.referrer || "" },
+      { name: "landing_page", value: b.landing_page || "" },
+      { name: "user_agent", value: b.user_agent || "" },
+    ],
+
+    context: {
+      hutk: b.hutk || undefined,
+      pageUri: b.landing_page || b.pageUri || "",
+      pageName: b.pageName || "",
+    },
+
+    legalConsentOptions: {
+      consent: {
+        consentToProcess: true,
+        text: "I agree to allow this website to store and process my personal data.",
+      },
+    },
+  };
+}
+/* -------------------- Routes -------------------- */
+
+// Health check
+app.get("/", (req, res) => {
+  res.status(200).send("Backend running 🚀");
+});
+
+/**
+ * POST /api/hubspot-submit-german
+ * Frontend should send your LeadForm + hutk/pageName/pageUri optionally:
+ * {
+ *   fullName, countryCode, phone, email, goal, germanLevel, startDate,
+ *   learningNeeds, consent, expertGuidance,
+ *   utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+ *   referrer, landing_page, user_agent,
+ *   hutk, pageName, pageUri
+ * }
+ */
+app.post("/api/hubspot-submit-german", async (req, res) => {
+  try {
+    if (!HUBSPOT_PORTAL_ID || !HUBSPOT_FORM_ID) {
+      return res.status(500).json({ error: "HUBSPOT_ENV_NOT_SET" });
+    }
+
+    const hubspotPayload = buildHubSpotPayload(req.body);
+
+    const endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_ID}`;
+
+    const r = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(hubspotPayload),
+    });
+
+    const raw = await r.text();
+    let data = null;
+
+    try {
+      data = raw ? JSON.parse(raw) : null;
+    } catch {
+      data = { raw };
+    }
+
+    if (!r.ok) {
+      return res.status(500).json({
+        error: "HUBSPOT_FAILED",
+        status: r.status,
+        details: data,
+      });
+    }
+
+    return res.status(200).json({ success: true, data });
+  } catch (err) {
+    return res.status(500).json({ error: "SERVER_ERROR", details: String(err) });
+  }
+});
+
+/* -------------------- Start -------------------- */
+app.listen(PORT, () => {
+  console.log(`Backend running at http://localhost:${PORT}`);
+});
